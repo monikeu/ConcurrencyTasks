@@ -1,4 +1,4 @@
-package domowe;
+package domowe.ProducerConsumerAsynchronous;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -8,36 +8,28 @@ class Monitor4341  {
     private final Lock lock = new ReentrantLock();
     private final Condition BLOCKED = lock.newCondition();
 
-    private int[] numbers; // 0 free, 1 occupied, 2 full
+    private int[] buffer; // 0 free, 1 occupied, 2 full
     private final int N;
     private int toInsert;
     private int toGet;
-    int free ;
 
-    Monitor4341(int M) {
-
+    Monitor4341(int M, int[] buffer) {
         toGet =0;
         toInsert=0;
-        N = 2 * M;
-        numbers = new int[N];
-        free = N;
-
-        for (int i = 0; i < N; i++) {
-            numbers[i] = 0;
-        }
+        N = M;
+        this.buffer = buffer;
     }
 
     public int put_begining() {
-        int i=0;
+        int i;
         lock.lock();
         try {
-            if(free>0){
-                i = toInsert;
-                numbers[toInsert] = 2;
-                toInsert = (toInsert + 1) % N;
-                free-=1;
+            if (buffer[toInsert] != 0) {
+                i = N;
             } else {
-                System.out.println("Lost informations\n");
+                i = toInsert;
+                buffer[toInsert] = 2;
+                toInsert = (toInsert + 1) % N;
             }
         } finally {
             lock.unlock();
@@ -48,11 +40,12 @@ class Monitor4341  {
     public void put_end(int i) {
         lock.lock();
         try {
-            numbers[i] = 2;
+            buffer[i] = 2;
             if (i == toGet) {
                 BLOCKED.signal();
             }
         } finally {
+            System.out.println("Produced " + i + "\n");
             lock.unlock();
         }
     }
@@ -61,7 +54,7 @@ class Monitor4341  {
         int i;
         lock.lock();
         try {
-            if (numbers[toGet] != 2) {
+            if (buffer[toGet] != 2) {
                 try {
                     BLOCKED.await();
                 } catch (InterruptedException e) {
@@ -78,16 +71,14 @@ class Monitor4341  {
     }
 
     public void get_end(int i){
-        numbers[i] = 0;
-    }
-
-
-    private synchronized void printTable() {
-        for (int i = 0; i < N; i++) {
-            System.out.print(numbers[i] + " ");
+        lock.lock();
+        try {
+            buffer[i] = 0;
+            toInsert=i;
+        }finally {
+            System.out.println("Consumed " + toGet + "\n");
+            lock.unlock();
         }
-        System.out.println();
     }
-
 
 }

@@ -1,4 +1,6 @@
-package domowe;
+package domowe.producerConsumerNElems;
+
+import domowe.ProducerConsumerAsynchronous.MonitorIf;
 
 public class Producer implements Runnable {
 

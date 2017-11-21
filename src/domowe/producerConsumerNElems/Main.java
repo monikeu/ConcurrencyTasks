@@ -1,4 +1,4 @@
-package domowe;
+package domowe.producerConsumerNElems;
 
 import java.util.Random;
 
@@ -18,14 +18,17 @@ public class Main {
 
         Random random = new Random();
 
+        for(int i=0;i<consumersNumber;i++){
+            customers[i] = new Thread(new Consumer(1, monitorN));
+            customers[i].start();
+        }
+
+        new Thread(new Consumer(M-1, monitorN)).start();
+
         for(int i=0;i<producersNumber;i++){
-            producers[i] = new Thread(new Producer(random.nextInt(M)+1, monitorN));
+            producers[i] = new Thread(new Producer(5, monitorN));
             producers[i].start();
         }
 
-        for(int i=0;i<consumersNumber;i++){
-            customers[i] = new Thread(new Consumer(random.nextInt(M), monitorN));
-            customers[i].start();
-        }
     }
 }

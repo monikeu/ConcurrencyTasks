@@ -1,4 +1,6 @@
-package domowe;
+package domowe.producerConsumerNElems;
+
+import domowe.ProducerConsumerAsynchronous.MonitorIf;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -52,8 +54,7 @@ class MonitorN implements MonitorIf {
             }
             free-=amount;
             taken+=amount;
-            System.out.println("\t Produced " + amount + "  free " + free + "  taken " + taken);
-            printTable();
+//            System.out.println("\t Produced " + amount + "  free " + free + "  taken " + taken);
             restProd.signal();
             firstCons.signal();
 
@@ -67,16 +68,23 @@ class MonitorN implements MonitorIf {
 
     public void take(int amount){
         lock.lock();
+        int k =0;
+        long time = 0;
         try {
 
+            time = System.currentTimeMillis();
             if(firstConsWaits){
                 restCons.await();
             }
 
             while(amount > taken){
                 firstConsWaits = true;
+                k++;
                 firstCons.await();
             }
+            time = time - System.currentTimeMillis();
+            if(amount ==  N/2-1)
+                System.out.println("Took " + amount + " waited " + k + " times\n");
 
             int j = 0;
             for(int i=0;i<amount;i++){
@@ -85,8 +93,7 @@ class MonitorN implements MonitorIf {
             }
             free+=amount;
             taken-=amount;
-            System.out.println("\t Consumed " + amount + "  free " + free + "  taken " + taken);
-            printTable();
+//            System.out.println("\t Consumed " + amount + "  free " + free + "  taken " + taken);
             restCons.signal();
             firstProd.signal();
 

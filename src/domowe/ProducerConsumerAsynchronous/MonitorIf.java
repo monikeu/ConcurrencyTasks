@@ -1,4 +1,4 @@
-package domowe;
+package domowe.ProducerConsumerAsynchronous;
 
 public interface MonitorIf {
 

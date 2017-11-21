@@ -1,4 +1,4 @@
-package com.company;
+package labs;
 
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package com.company;
+package labs;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
