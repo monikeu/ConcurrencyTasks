@@ -20,11 +20,7 @@ public class Consumer4341 implements Runnable {
 //            System.out.println("Consuming\n");
             i = monitor.get_beginning();
             monitor.get_end(i);
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+
         }
     }
 }
