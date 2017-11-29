@@ -16,6 +16,7 @@ public class MethodRequest {
 
     public void call() throws Exception {
         future = (Future)method.call();
+        future.setaBoolean(true);
     }
 
 }
