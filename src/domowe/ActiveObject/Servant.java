@@ -1,7 +1,7 @@
 package domowe.ActiveObject;
 
 public class Servant {
-    public void method1(){}
-    public void method2(){}
-    public void method3(){}
+    public Future method1(){return null;}
+    public Future method2(){return null;}
+    public Future method3(){return null;}
 }

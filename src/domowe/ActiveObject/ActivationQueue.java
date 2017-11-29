@@ -1,16 +1,21 @@
 package domowe.ActiveObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActivationQueue {
     List<MethodRequest> queue;
 
-    public void enqueue(MethodRequest methodRequest){
-        // dodaj
+    ActivationQueue(int n){
+        queue = new ArrayList<>(n);
     }
 
-    public MethodRequest dequeue(){
-        /// wyciagnij
+    public void enqueue(MethodRequest methodRequest, int i){
+        queue.add(i, methodRequest);
+    }
+
+    public MethodRequest dequeue(int i){
+        queue.get(i);
         return null;
     }
 }

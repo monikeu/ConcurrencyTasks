@@ -20,7 +20,6 @@ public class Consumer4341 implements Runnable {
 //            System.out.println("Consuming\n");
             i = monitor.get_beginning();
             monitor.get_end(i);
-
         }
     }
 }
