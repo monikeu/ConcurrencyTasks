@@ -1,11 +1,11 @@
 package domowe.ActiveObject;
 
 public class Future {
-    private boolean aBoolean;
-    public boolean isAvailable(){return aBoolean;};
+    private boolean avalibility = false;
+    public boolean isAvailable(){return avalibility;};
     public Object get(){return null;}
 
-    public void setaBoolean(boolean aBoolean) {
-        this.aBoolean = aBoolean;
+    public void setAvalaible(boolean aBoolean) {
+        this.avalibility = aBoolean;
     }
 }

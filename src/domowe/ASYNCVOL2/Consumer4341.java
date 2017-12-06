@@ -1,4 +1,4 @@
-package domowe.producerConsumerAsynchronousVersionWithQueues;
+package domowe.ASYNCVOL2;
 
 import java.util.List;
 
