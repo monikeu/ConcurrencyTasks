@@ -2,16 +2,10 @@ package domowe.ActiveObject;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class ProduceActivationQueue extends ActivationQueue{
+public class QueueProduce extends ActivationQueue{
     private Queue<ProducerMethodRequest> queue = new ConcurrentLinkedQueue<>();
-
-    public boolean guardOneRequest(int inFreeQ){
-        if(!queue.isEmpty()){
-            return queue.peek().guard(inFreeQ);
-        }
-        return false;
-    }
 
     @Override
     void enqueue(MethodRequest methodRequest) {
@@ -22,4 +16,8 @@ public class ProduceActivationQueue extends ActivationQueue{
     ProducerMethodRequest dequeue() {
         return queue.poll();
     }
+
+    ProducerMethodRequest peek(){return queue.peek();}
+
+    boolean isEmpty(){return queue.isEmpty();};
 }

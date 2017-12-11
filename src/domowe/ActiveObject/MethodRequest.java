@@ -1,6 +1,6 @@
 package domowe.ActiveObject;
 
-public interface MethodRequest extends Runnable {
+public interface MethodRequest {
 
     boolean guard(int n);
 

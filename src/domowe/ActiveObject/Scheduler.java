@@ -1,53 +1,20 @@
 package domowe.ActiveObject;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Scheduler implements Runnable {
 
-    private static ReentrantLock lock = new ReentrantLock();
+    private static QueueConsume consumerQueue = new QueueConsume();
+    private static QueueProduce producerQueue = new QueueProduce();
 
-    private static ConsumeActivationQueue consumerQueue = new ConsumeActivationQueue();
-    private static ProduceActivationQueue producerQueue = new ProduceActivationQueue();
+    public static int N = 20;
+    private static Buffer buffer = new Buffer(N);
 
-    public static Queue<Integer> freeQ = new ConcurrentLinkedQueue<>();
-    public static Queue<Integer> fullQ = new ConcurrentLinkedQueue<>();
-
-    public static int N = 1000;
-    public static int free = N, full = 0;
+    public Servant servant = new Servant(buffer);
 
 
     public Scheduler() {
-        for (int i = 0; i < N; i++) {
-            freeQ.add(i);
-        }
-    }
-
-    public static boolean reserveForProducer(int n) {
-        lock.lock();
-        if (free >= n) {
-            free -= n;
-            lock.unlock();
-            return true;
-        } else {
-            lock.unlock();
-            return false;
-        }
-
-    }
-
-    public static boolean reserveForConsumer(int n) {
-        lock.lock();
-
-        if (full >= n) {
-            full -= n;
-            lock.unlock();
-            return true;
-        } else {
-            lock.unlock();
-            return false;
-        }
     }
 
     public void enqueueInProducersQueue(MethodRequest methodRequest) {
@@ -59,28 +26,75 @@ public class Scheduler implements Runnable {
     }
 
 
-    public static void giveBackFree(int howMany) {
-        lock.lock();
-        free += howMany;
-        lock.unlock();
-    }
-
-    public static void giveBackFull(int howMany) {
-        lock.lock();
-        full += howMany;
-        lock.unlock();
-    }
-
     @Override
     public void run() {
+        ProducerMethodRequest currentProd;
+        ConsumerMethodRequest currentCons;
+
         while (true) {
-            if (producerQueue.guardOneRequest(free)) {
-                new Thread(producerQueue.dequeue()).start();
+            buffer.printState();
+            if (!producerQueue.isEmpty()) {
+                if (producerQueue.peek().guard(buffer.freeQ.size())) { //dopisać guardy
+                    List<Integer> prodIndexes = new ArrayList<>();
+                    currentProd = producerQueue.dequeue();
+
+                    for (int i = 0; i < currentProd.n; i++) {
+                        try {
+                            Integer take = buffer.freeQ.take();
+                            buffer.buffer[take] = 1;
+                            prodIndexes.add(take);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    servant.put(currentProd, prodIndexes);
+                }
             }
-            if (consumerQueue.guardOneRequest(full)) {
-                new Thread(producerQueue.dequeue()).start();
+            buffer.printState();
+            if (!consumerQueue.isEmpty()) {
+                if (consumerQueue.peek().guard(buffer.fullQ.size())) { //dopisać guardy
+                    List<Integer> consIndexes = new ArrayList<>();
+                    currentCons = consumerQueue.dequeue();
+
+                    for (int i = 0; i < currentCons.n; i++) {
+                        try {
+                            Integer take = buffer.fullQ.take();
+                            buffer.buffer[take]=0;
+                            consIndexes.add(take);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    servant.take(currentCons, consIndexes);
+                }
             }
+//              if( (currentProd = producerQueue.dequeue()) != null){
+//                  List<Integer> prodIndexes = new ArrayList<>();
+//                  for (int i = 0; i < currentProd.n; i++) {
+//                      try {
+//                          prodIndexes.add(buffer.freeQ.take());
+//                      } catch (InterruptedException e) {
+//                          e.printStackTrace();
+//                      }
+//                  }
+//                  servant.put(currentProd, prodIndexes);
+//              }
+//
+//            if( (currentCons = consumerQueue.dequeue()) != null){
+//                List<Integer> consIndexes = new ArrayList<>();
+//                for (int i = 0; i < currentCons.n; i++) {
+//                    try {
+//                        consIndexes.add(buffer.fullQ.take());
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                servant.take(currentCons, consIndexes);
+//            }
         }
     }
 
+    void printBuffState(){
+
+    }
 }

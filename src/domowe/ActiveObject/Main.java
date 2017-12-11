@@ -1,8 +1,5 @@
 package domowe.ActiveObject;
 
-import domowe.producerConsumerAsynchronousVersionWithQueuesWORKS.Consumer4341;
-import domowe.producerConsumerAsynchronousVersionWithQueuesWORKS.Producer4341;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,7 +8,7 @@ import static java.lang.Math.abs;
 
 public class Main {
     public static void main(String[] args) {
-        int N = 500;
+        int N = 10;
 
         int producersNumber = 10;
         Thread producers[] = new Thread[producersNumber];
@@ -25,15 +22,13 @@ public class Main {
         p.runScheduler();
 
         for(int i=0;i<consumersNumber;i++){
-            consumers[i] = new Thread(new Consumer(abs(random.nextInt(100)),buffer,p));
+            consumers[i] = new Thread(new Consumer(abs(random.nextInt(N)),buffer,p));
             consumers[i].start();
         }
 
         for(int i=0;i<producersNumber;i++){
-            producers[i] = new Thread(new Producer(abs(random.nextInt(100)) ,buffer,p));
+            producers[i] = new Thread(new Producer(abs(random.nextInt(N)) ,buffer,p));
             producers[i].start();
         }
-
-
     }
 }
