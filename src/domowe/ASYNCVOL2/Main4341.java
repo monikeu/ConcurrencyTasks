@@ -23,14 +23,32 @@ public class Main4341 {
         Random random = new Random();
 
         for(int i=0;i<consumersNumber;i++){
-            consumers[i] = new Thread(new Consumer4341(abs(random.nextInt(M)+1), monitorN,buffer));
+            consumers[i] = new Thread(new Consumer4341(abs(random.nextInt(M)), monitorN,buffer));
             consumers[i].start();
         }
         
         for(int i=0;i<producersNumber;i++){
-            producers[i] = new Thread(new Producer4341(abs(random.nextInt(M)+1), monitorN,buffer));
+            producers[i] = new Thread(new Producer4341(abs(random.nextInt(M)), monitorN,buffer));
             producers[i].start();
         }
+
+        for(int i=0;i<consumersNumber;i++){
+            try {
+                consumers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(int i=0;i<producersNumber;i++){
+            try {
+                producers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        monitorN.closeFiles();
     }
 }
 

@@ -7,10 +7,12 @@ public class ProducerMethodRequest implements MethodRequest {
 
     public int n;
     public Future future;
+    long start;
 
-    public ProducerMethodRequest(int n, Future future){
+    public ProducerMethodRequest(int n, Future future, long start){
         this.future=future;
         this.n=n;
+        this.start=start;
     }
 
     @Override

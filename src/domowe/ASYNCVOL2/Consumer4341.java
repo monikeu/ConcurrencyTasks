@@ -7,6 +7,7 @@ public class Consumer4341 implements Runnable {
     private int number;
     private MonitorN monitor;
     private List<Integer> buffer;
+    long start;
 
     Consumer4341(int number, MonitorN monitor,   List<Integer> buffer) {
 
@@ -18,10 +19,12 @@ public class Consumer4341 implements Runnable {
     @Override
     public void run() {
         List<Integer> i;
-        while (true) {
+        while (monitor.done < 10) {
+            start=System.currentTimeMillis();
             i = monitor.getBegin(number);
             System.out.println("Consuming elem " + i + "\n");
-            monitor.getEnd(i);
+            monitor.getEnd(start,i);
+
         }
     }
 }

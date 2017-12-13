@@ -8,9 +8,10 @@ public class Scheduler implements Runnable {
     private static QueueConsume consumerQueue = new QueueConsume();
     private static QueueProduce producerQueue = new QueueProduce();
 
-    public static int N = 20;
+    public static int N = 200;
     private static Buffer buffer = new Buffer(N);
 
+    public static int done = 0;
     public Servant servant = new Servant(buffer);
 
 
@@ -31,9 +32,10 @@ public class Scheduler implements Runnable {
         ProducerMethodRequest currentProd;
         ConsumerMethodRequest currentCons;
 
-        while (true) {
-            buffer.printState();
+        while (done < 10000) {
+//            buffer.printState();
             if (!producerQueue.isEmpty()) {
+
                 if (producerQueue.peek().guard(buffer.freeQ.size())) { //dopisać guardy
                     List<Integer> prodIndexes = new ArrayList<>();
                     currentProd = producerQueue.dequeue();
@@ -48,9 +50,11 @@ public class Scheduler implements Runnable {
                         }
                     }
                     servant.put(currentProd, prodIndexes);
+                    done++;
                 }
+
             }
-            buffer.printState();
+//            buffer.printState();
             if (!consumerQueue.isEmpty()) {
                 if (consumerQueue.peek().guard(buffer.fullQ.size())) { //dopisać guardy
                     List<Integer> consIndexes = new ArrayList<>();
@@ -66,32 +70,12 @@ public class Scheduler implements Runnable {
                         }
                     }
                     servant.take(currentCons, consIndexes);
+                    done++;
                 }
             }
-//              if( (currentProd = producerQueue.dequeue()) != null){
-//                  List<Integer> prodIndexes = new ArrayList<>();
-//                  for (int i = 0; i < currentProd.n; i++) {
-//                      try {
-//                          prodIndexes.add(buffer.freeQ.take());
-//                      } catch (InterruptedException e) {
-//                          e.printStackTrace();
-//                      }
-//                  }
-//                  servant.put(currentProd, prodIndexes);
-//              }
-//
-//            if( (currentCons = consumerQueue.dequeue()) != null){
-//                List<Integer> consIndexes = new ArrayList<>();
-//                for (int i = 0; i < currentCons.n; i++) {
-//                    try {
-//                        consIndexes.add(buffer.fullQ.take());
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                servant.take(currentCons, consIndexes);
-//            }
         }
+
+        servant.closeFiles();
     }
 
     void printBuffState(){

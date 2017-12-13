@@ -7,6 +7,7 @@ public class Consumer implements Runnable {
     private int number;
     private List<Integer> buffer;
     private Proxy p;
+    private int done = 0;
 
     Consumer(int number, List<Integer> buffer, Proxy p) {
         this.p = p;
@@ -18,19 +19,20 @@ public class Consumer implements Runnable {
     @Override
     public void run() {
 
-        Random random =new Random();
+        Random random = new Random();
         List<Integer> i;
         while (true) {
             Future f = p.take(number);
-            System.out.println("Consumer  requested consuming " + number + " elems\n");
-            while(!f.isAvailable()){
+//            System.out.println("Consumer  requested consuming " + number + " elems\n");
+            while (!f.isAvailable()) {
                 try {
-                    Thread.sleep(random.nextInt(1000));
+                    Thread.sleep(random.nextInt(100));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                if (Scheduler.done >= 10000) break;
             }
-            System.out.println("Consumer  receiced information in Future\n");
+            if (Scheduler.done >= 10000) break;
         }
     }
 }

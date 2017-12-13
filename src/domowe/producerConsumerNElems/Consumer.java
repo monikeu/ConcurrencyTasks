@@ -6,6 +6,7 @@ public class Consumer implements Runnable {
 
     private int number;
     private MonitorIf monitorN;
+    public static int done = 0;
 
     Consumer(int number, MonitorIf monitorN) {
         this.number = number;
@@ -14,7 +15,13 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
-        while (true)
+        while (done < 5000 && Producer.done < 5000) {
+            add();
             monitorN.take(number);
+        }
+    }
+
+    synchronized void add(){
+        done++;
     }
 }

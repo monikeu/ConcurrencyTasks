@@ -2,6 +2,7 @@ package domowe.producerConsumerNElems;
 
 import domowe.ProducerConsumerAsynchronous.MonitorIf;
 
+import java.io.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,6 +13,8 @@ class MonitorN implements MonitorIf {
     private final Condition restProd = lock.newCondition();
     private final Condition firstCons = lock.newCondition();
     private final Condition restCons = lock.newCondition();
+    private  BufferedWriter writerProd;
+    private  BufferedWriter writerCons;
     private boolean firstProdWaits;
     private boolean firstConsWaits;
 
@@ -32,10 +35,25 @@ class MonitorN implements MonitorIf {
         for(int i=0;i<N;i++){
             numbers[i] = 0;
         }
+
+        try {
+            writerCons = new BufferedWriter((new FileWriter("NCons.csv")));
+            writerCons.write("Time, Amount\n");
+            writerProd = new BufferedWriter((new FileWriter("NProd.csv")));
+            writerProd.write("Time, Amount\n");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void put(int amount){
         lock.lock();
+        long start = System.currentTimeMillis();
         try{
 
             if(firstProdWaits){
@@ -52,14 +70,18 @@ class MonitorN implements MonitorIf {
                 while(numbers[j] != 0) j++;
                 numbers[j] = 1;
             }
+            long time = System.currentTimeMillis()-start;
+            writerProd.write(time + "," + amount+ "\n");
+
             free-=amount;
             taken+=amount;
-//            System.out.println("\t Produced " + amount + "  free " + free + "  taken " + taken);
             restProd.signal();
             firstCons.signal();
 
         } catch(InterruptedException exc) {
             exc.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -68,11 +90,9 @@ class MonitorN implements MonitorIf {
 
     public void take(int amount){
         lock.lock();
+        long start = System.currentTimeMillis();
         int k =0;
-        long time = 0;
         try {
-
-            time = System.currentTimeMillis();
             if(firstConsWaits){
                 restCons.await();
             }
@@ -82,15 +102,18 @@ class MonitorN implements MonitorIf {
                 k++;
                 firstCons.await();
             }
-            time = time - System.currentTimeMillis();
-            if(amount ==  N/2-1)
-                System.out.println("Took " + amount + " waited " + k + " times\n");
+
+//            if(amount ==  N/2-1)
+//                System.out.println("Took " + amount + " waited " + k + " times\n");
 
             int j = 0;
             for(int i=0;i<amount;i++){
                 while(numbers[j] != 1) j++;
                 numbers[j] = 0;
             }
+            long time = System.currentTimeMillis()- start;
+            writerCons.write(time + "," + amount+ "\n");
+
             free+=amount;
             taken-=amount;
 //            System.out.println("\t Consumed " + amount + "  free " + free + "  taken " + taken);
@@ -99,6 +122,8 @@ class MonitorN implements MonitorIf {
 
         } catch(InterruptedException exc) {
             exc.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -109,6 +134,15 @@ class MonitorN implements MonitorIf {
             System.out.print(numbers[i] + " ");
         }
         System.out.println();
+    }
+
+    public void close(){
+        try {
+            writerProd.close();
+            writerCons.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

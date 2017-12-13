@@ -1,5 +1,6 @@
 package domowe.producerConsumerAsynchronousVersionWithQueuesWORKS;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -24,6 +25,7 @@ class MonitorN {
 
     private boolean firstProdWaits= false, firstConsWaits=false;
 
+
     MonitorN(int N) {
         this.N = 2 * N;
 
@@ -33,7 +35,6 @@ class MonitorN {
         for (int i = 0; i < this.N; i++) {
             freeQ.add(i);
         }
-
     }
 
     public List<Integer> putBegin(int n) {
@@ -69,7 +70,7 @@ class MonitorN {
         return res;
     }
 
-    public void putEnd(List<Integer> list) {
+    public void putEnd( List<Integer> list) {
         lock.lock();
         try {
             fullQ.addAll(list);
@@ -111,7 +112,7 @@ class MonitorN {
         return res;
     }
 
-    public void getEnd(List<Integer> list) {
+    public void getEnd( List<Integer> list) {
         lock.lock();
         try {
 
@@ -123,4 +124,6 @@ class MonitorN {
             lock.unlock();
         }
     }
+
+
 }

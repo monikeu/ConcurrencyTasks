@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class Main {
 
-    private final static int M = 10;
-    private final static int producersNumber = 10;
-    private final static int consumersNumber = 10;
+    private final static int M = 100;
+    private final static int producersNumber = 500;
+    private final static int consumersNumber = 500;
 
 
     public static void main(String[] args) {
@@ -19,16 +19,31 @@ public class Main {
         Random random = new Random();
 
         for(int i=0;i<consumersNumber;i++){
-            customers[i] = new Thread(new Consumer(1, monitorN));
+            customers[i] = new Thread(new Consumer(random.nextInt(M), monitorN));
             customers[i].start();
         }
 
-        new Thread(new Consumer(M-1, monitorN)).start();
-
         for(int i=0;i<producersNumber;i++){
-            producers[i] = new Thread(new Producer(5, monitorN));
+            producers[i] = new Thread(new Producer(random.nextInt(M), monitorN));
             producers[i].start();
         }
 
+        for(int i=0;i<consumersNumber;i++){
+            try {
+                customers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(int i=0;i<producersNumber;i++){
+            try {
+                producers[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        monitorN.close();
     }
 }
