@@ -16,6 +16,7 @@ public class Consumer4341 implements Runnable {
 
     Consumer4341(int number, MonitorN monitor,   List<Integer> buffer) {
 
+
         this.number = number;
         this.monitor = monitor;
         this.buffer = buffer;
