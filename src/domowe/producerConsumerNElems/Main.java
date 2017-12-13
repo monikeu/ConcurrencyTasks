@@ -23,6 +23,7 @@ public class Main {
             customers[i].start();
         }
 
+
         for(int i=0;i<producersNumber;i++){
             producers[i] = new Thread(new Producer(random.nextInt(M), monitorN));
             producers[i].start();
