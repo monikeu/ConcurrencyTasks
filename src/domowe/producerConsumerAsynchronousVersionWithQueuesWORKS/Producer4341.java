@@ -1,32 +1,25 @@
 package domowe.producerConsumerAsynchronousVersionWithQueuesWORKS;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 
 public class Producer4341 implements Runnable {
 
-    private  BufferedWriter writerProd;
+    private final MonitorN monitor;
     private int number;
-    private MonitorN monitor;
-    private List<Integer> buffer;
-    private long start;
+    private int sleepTime;
+    private int threadNumb;
+    private int runsNumber;
 
-    public static int doneProds = 0;
+    public int doneProds = 0;
 
 
-    Producer4341(int number, MonitorN monitor, List<Integer> buffer) {
+    Producer4341(int number, MonitorN monitor, int runsNumber, int sleepTime, int threadNumb) {
 
         this.number = number;
+        this.runsNumber = runsNumber;
         this.monitor = monitor;
-        this.buffer = buffer;
-        try {
-            writerProd = new BufferedWriter((new FileWriter("asyncProd.csv")));
-            writerProd.write("Time, Amount\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.sleepTime = sleepTime;
+        this.threadNumb = threadNumb;
     }
 
 
@@ -34,22 +27,16 @@ public class Producer4341 implements Runnable {
     public void run() {
 
         List<Integer> i;
-        while (Consumer4341.doneCons < 5000 && doneProds <5000) {
-            start=System.currentTimeMillis();
-            i = monitor.putBegin(number);
-            write(number, System.currentTimeMillis()-start);
-//            System.out.println("Producing into " + i + "\n");
-            // do sth with ith elem of
+        while (doneProds < runsNumber) {
+            i = monitor.putBegin(number,sleepTime, threadNumb);
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             monitor.putEnd(i);
             doneProds++;
         }
     }
 
-    synchronized void write(int n, long time){
-        try {
-            writerProd.write(time + "," + n + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

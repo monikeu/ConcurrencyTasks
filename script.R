@@ -1,10 +1,10 @@
 library(ggplot2)
 
-producerActiveObject = read.csv("acProd100.csv")
-consumerActiveObject = read.csv("acCons100.csv")
+producerActiveObject = read.csv("acProd.csv")
+consumerActiveObject = read.csv("acCons.csv")
 
-producerN = read.csv("NProd100.csv")
-consumerN = read.csv("NCons100.csv")
+producerN = read.csv("NProd.csv")
+consumerN = read.csv("NCons.csv")
 
 avg_producerActiveObject= aggregate( Time ~Amount, data=producerActiveObject, FUN=mean)
 avg_consumerActiveObject= aggregate( Time ~Amount, data=consumerActiveObject, FUN=mean)

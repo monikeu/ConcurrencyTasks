@@ -4,49 +4,83 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.Math.abs;
-
 public class Main4341 {
-    private final static int M = 100;
-    private final static int producersNumber = 100;
-    private final static int consumersNumber = 100;
+
+    private final static int runsNumber = 10;
+    private static int producersN[];
+    private static int consumersN[];
+
+    static Thread[] customers;
+    static Thread[] producers;
+    static MonitorN monitorN;
+    static Random random = new Random();
 
     public static void main(String[] args) {
 
-        List<Integer> buffer = new ArrayList<>();
+        runExperiment("AsyncCons.csv", "AsyncProd.csv", 500, 10, 1000);
 
-        MonitorN monitorN = new MonitorN(M);
+//        runExperiment("timeNThreadNumbCons.csv", "timeNThreadNumbProd.csv", 100, 100, 1000);
+//        runExperiment("timeNSleepTimeCons.csv", "timeNSleepTimeProd.csv", 100, 1000, 100);
+//        runExperiment("timeNBuffSizeCons.csv", "timeNBuffSizeProd.csv", 1000, 100, 100);
+//        runExperiment();
 
-        Thread producers[] = new Thread[producersNumber];
-        Thread consumers[] = new Thread[consumersNumber];
-        
-        Random random = new Random();
+    }
 
-        for(int i=0;i<consumersNumber;i++){
-            consumers[i] = new Thread(new Consumer4341(abs(random.nextInt(M)+1), monitorN,buffer));
-            consumers[i].start();
-        }
-        
-        for(int i=0;i<producersNumber;i++){
-            producers[i] = new Thread(new Producer4341(abs(random.nextInt(M)+1), monitorN,buffer));
-            producers[i].start();
-        }
+//    "timeNThreadNumbCons.csv" "timeNThreadNumbProd.csv"
 
-        for(int i=0;i<consumersNumber;i++){
-            try {
-                consumers[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public static void runExperiment(String consFileName, String prodFileName, int maxBuffSize, int maxSleepTime, int maxThreads) {
+
+        for (int buffSize = 100; buffSize <= maxBuffSize; buffSize += 100) {
+            for (int sleepTime = 10; sleepTime <= maxSleepTime; sleepTime += 10) {
+                for (int threadNumb = 200; threadNumb <= maxThreads; threadNumb += 200) {
+
+                    System.out.println("Threads " + threadNumb + " buffsize " + buffSize + " sleeptime " + sleepTime);
+                        producersN = new int[threadNumb];
+                        consumersN = new int[threadNumb];
+
+                        producers = new Thread[threadNumb];
+                        customers = new Thread[threadNumb];
+
+
+                        for (int i = 0; i < threadNumb; i++) {
+                            int i1 = random.nextInt(buffSize);
+                            producersN[i] = i1;
+                            consumersN[threadNumb - i - 1] = i1;
+                        }
+
+                        monitorN = new MonitorN(buffSize, threadNumb, consFileName, prodFileName);
+
+                        for (int i = 0; i < threadNumb; i++) {
+                            customers[i] = new Thread(new Consumer4341(consumersN[i], monitorN, runsNumber, sleepTime, threadNumb));
+                            customers[i].start();
+                        }
+
+
+                        for (int i = 0; i < threadNumb; i++) {
+                            producers[i] = new Thread(new Producer4341(producersN[i], monitorN, runsNumber, sleepTime, threadNumb));
+                            producers[i].start();
+                        }
+
+                        for (int i = 0; i < threadNumb; i++) {
+                            try {
+                                customers[i].join();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        for (int i = 0; i < threadNumb; i++) {
+                            try {
+                                producers[i].join();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        monitorN.close();
+
+                }
             }
         }
-
-        for(int i=0;i<producersNumber;i++){
-            try {
-                producers[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 }

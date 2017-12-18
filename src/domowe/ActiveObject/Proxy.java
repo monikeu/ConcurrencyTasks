@@ -4,8 +4,20 @@ public class Proxy {
 
     private Scheduler scheduler;
     private Thread schedulerRunner;
+    private int threadNumb;
+    private int n;
+    private int sleepTime;
+    private String consFileName;
+    private String prodFileName;
+    private int runsNumber;
 
-    public Proxy(){
+    public Proxy(int threadNumb, int N, int sleepTime, String consFileName, String prodFileName, int runsNumber){
+        this.threadNumb = threadNumb;
+        n = N;
+        this.sleepTime = sleepTime;
+        this.consFileName = consFileName;
+        this.prodFileName = prodFileName;
+        this.runsNumber = runsNumber;
     }
 
     public Future take(int n){
@@ -21,7 +33,7 @@ public class Proxy {
     }
 
     public void runScheduler(){
-        scheduler = new Scheduler();
+        scheduler = new Scheduler(threadNumb,n,sleepTime, consFileName, prodFileName, runsNumber*2*threadNumb);
         schedulerRunner = new Thread(scheduler);
         schedulerRunner.start();
     }

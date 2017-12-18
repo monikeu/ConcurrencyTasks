@@ -1,28 +1,26 @@
 package domowe.producerConsumerNElems;
 
-import domowe.ProducerConsumerAsynchronous.MonitorIf;
-
 public class Producer implements Runnable {
 
     private int number;
     private MonitorIf monitorN;
-    public  static int done = 0;
+    private int sleepTime;
+    private int done = 0;
+    private int runsNumber;
 
-
-    Producer(int number, MonitorIf monitorN) {
+    public Producer(int number, MonitorN monitorN, int runsNumber, int sleepTime) {
         this.number = number;
+        this.runsNumber = runsNumber;
         this.monitorN = monitorN;
+        this.sleepTime = sleepTime;
     }
 
     @Override
     public void run() {
-        while (done < 5000 && Consumer.done < 5000) {
-            add();
-            monitorN.put(number);
+        while (done < runsNumber) {
+            monitorN.put(number, sleepTime);
+            done++;
         }
     }
 
-    synchronized void add(){
-        done++;
-    }
 }

@@ -23,11 +23,17 @@ class MonitorN {
     private Queue<Integer> freeQ;
     private Queue<Integer> fullQ;
 
+    private BufferedWriter writerProd;
+    private BufferedWriter writerCons;
+
     private boolean firstProdWaits= false, firstConsWaits=false;
+    private String consFileName;
+    private String prodFileName;
 
-
-    MonitorN(int N) {
-        this.N = 2 * N;
+    MonitorN(int M, int threads, String consFileName, String prodFileName) {
+        this.N = 2 * M;
+        this.consFileName = consFileName;
+        this.prodFileName = prodFileName;
 
         freeQ = new ConcurrentLinkedQueue<>();
         fullQ = new ConcurrentLinkedQueue<>();
@@ -35,12 +41,25 @@ class MonitorN {
         for (int i = 0; i < this.N; i++) {
             freeQ.add(i);
         }
+
+        try {
+            writerCons = new BufferedWriter((new FileWriter(consFileName, true)));
+//            writerCons.write("Time, Threads, SleepTime, Buffsize, Amount\n");
+            writerProd = new BufferedWriter((new FileWriter(prodFileName, true)));
+//            writerProd.write("Time, Threads, SleepTime, Buffsize, Amount\n");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<Integer> putBegin(int n) {
+    public List<Integer> putBegin(int n, int sleepTime, int threads) {
 
         lock.lock();
-
+        long start = System.currentTimeMillis();
         List<Integer> res = new ArrayList<>();
         try {
 
@@ -58,11 +77,15 @@ class MonitorN {
                 res.add(i);
 
             }
+            long time = System.currentTimeMillis() - start;
+            writerProd.write(time + "," + threads + "," + sleepTime + "," + N +  "," + n +"\n");
             if(!lock.hasWaiters(waitRestProd)){
                 firstProdWaits = false;
             }
 
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
@@ -81,10 +104,11 @@ class MonitorN {
         }
     }
 
-    public List<Integer> getBegin(int n) {
+    public List<Integer> getBegin(int n, int sleepTime, int threads) {
 
         List<Integer> res = new ArrayList<>();
         lock.lock();
+        long start = System.currentTimeMillis();
         try {
 
             if(firstConsWaits){
@@ -98,12 +122,18 @@ class MonitorN {
                 Integer i = fullQ.poll();
                 res.add(i);
             }
+
+            long time = System.currentTimeMillis() - start;
+            writerCons.write(time + "," + threads + "," + sleepTime + "," + N +  "," + n +"\n");
+
             if(!lock.hasWaiters(waitRestCons)){
                 firstConsWaits = false;
             }
 
 
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
@@ -115,7 +145,6 @@ class MonitorN {
     public void getEnd( List<Integer> list) {
         lock.lock();
         try {
-
             freeQ.addAll(list);
             waitFirstProd.signal();
             waitRestCons.signal();
@@ -124,6 +153,13 @@ class MonitorN {
             lock.unlock();
         }
     }
-
+    public void close() {
+        try {
+            writerProd.close();
+            writerCons.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

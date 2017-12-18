@@ -1,38 +1,37 @@
 package domowe.ActiveObject;
 
 import java.util.List;
-import java.util.Random;
 
 public class Producer implements Runnable {
     private int number;
     private List<Integer> buffer;
+    private int sleepTime;
+    private int runsNumber;
     private Proxy p;
     private int done = 0;
 
-    Producer(int number, List<Integer> buffer, Proxy p) {
+    Producer(int number, List<Integer> buffer, Proxy p, int sleepTime, int runsNumber) {
         this.p = p;
         this.number = number;
         this.buffer = buffer;
+        this.sleepTime = sleepTime;
+        this.runsNumber = runsNumber;
     }
 
     @Override
     public void run() {
 
-        Random random = new Random();
         List<Integer> i;
-        while (true) {
+        while (done < runsNumber) {
             Future f = p.put(number);
-//            System.out.println("Producer requested producing " + number + " elems\n");
             while (!f.isAvailable()) {
                 try {
-                    Thread.sleep(random.nextInt(100));
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(Scheduler.done >= 10000) break; ;
             }
-            if(Scheduler.done >= 10000)break; ;
-
+            done++;
         }
     }
 }
