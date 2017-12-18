@@ -58,8 +58,8 @@ class MonitorN {
 
     public List<Integer> putBegin(int n, int sleepTime, int threads) {
 
-        lock.lock();
         long start = System.currentTimeMillis();
+        lock.lock();
         List<Integer> res = new ArrayList<>();
         try {
 
@@ -107,8 +107,8 @@ class MonitorN {
     public List<Integer> getBegin(int n, int sleepTime, int threads) {
 
         List<Integer> res = new ArrayList<>();
-        lock.lock();
         long start = System.currentTimeMillis();
+        lock.lock();
         try {
 
             if(firstConsWaits){

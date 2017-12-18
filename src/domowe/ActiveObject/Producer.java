@@ -1,6 +1,7 @@
 package domowe.ActiveObject;
 
 import java.util.List;
+import java.util.Random;
 
 public class Producer implements Runnable {
     private int number;
@@ -20,13 +21,14 @@ public class Producer implements Runnable {
 
     @Override
     public void run() {
+        Random r = new Random();
 
         List<Integer> i;
         while (done < runsNumber) {
             Future f = p.put(number);
             while (!f.isAvailable()) {
                 try {
-                    Thread.sleep(sleepTime);
+                    Thread.sleep(r.nextInt(sleepTime));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

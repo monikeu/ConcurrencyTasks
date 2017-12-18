@@ -17,7 +17,7 @@ public class Main4341 {
 
     public static void main(String[] args) {
 
-        runExperiment("AsyncCons.csv", "AsyncProd.csv", 500, 10, 1000);
+        runExperiment("AsyncCons0.csv", "AsyncProd0.csv", 100, 5, 100);
 
 //        runExperiment("timeNThreadNumbCons.csv", "timeNThreadNumbProd.csv", 100, 100, 1000);
 //        runExperiment("timeNSleepTimeCons.csv", "timeNSleepTimeProd.csv", 100, 1000, 100);
@@ -31,8 +31,8 @@ public class Main4341 {
     public static void runExperiment(String consFileName, String prodFileName, int maxBuffSize, int maxSleepTime, int maxThreads) {
 
         for (int buffSize = 100; buffSize <= maxBuffSize; buffSize += 100) {
-            for (int sleepTime = 10; sleepTime <= maxSleepTime; sleepTime += 10) {
-                for (int threadNumb = 200; threadNumb <= maxThreads; threadNumb += 200) {
+            for (int sleepTime = 1; sleepTime <= maxSleepTime; sleepTime += 1) {
+                for (int threadNumb = 10; threadNumb <= maxThreads; threadNumb += 10) {
 
                     System.out.println("Threads " + threadNumb + " buffsize " + buffSize + " sleeptime " + sleepTime);
                         producersN = new int[threadNumb];

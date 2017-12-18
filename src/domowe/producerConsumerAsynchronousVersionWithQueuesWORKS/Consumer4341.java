@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class Consumer4341 implements Runnable {
 
@@ -27,10 +28,12 @@ public class Consumer4341 implements Runnable {
     @Override
     public void run() {
         List<Integer> i;
+        Random r = new Random();
+
         while (doneCons < runsNumber) {
             i = monitor.getBegin(number, sleepTime, threadNumb);
             try {
-                Thread.sleep(sleepTime);
+                Thread.sleep(r.nextInt(sleepTime));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

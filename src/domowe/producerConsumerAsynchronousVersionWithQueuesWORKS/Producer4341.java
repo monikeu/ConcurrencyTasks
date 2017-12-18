@@ -1,6 +1,7 @@
 package domowe.producerConsumerAsynchronousVersionWithQueuesWORKS;
 
 import java.util.List;
+import java.util.Random;
 
 public class Producer4341 implements Runnable {
 
@@ -26,11 +27,13 @@ public class Producer4341 implements Runnable {
     @Override
     public void run() {
 
+        Random r = new Random();
+
         List<Integer> i;
         while (doneProds < runsNumber) {
             i = monitor.putBegin(number,sleepTime, threadNumb);
             try {
-                Thread.sleep(sleepTime);
+                Thread.sleep(r.nextInt(sleepTime));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
