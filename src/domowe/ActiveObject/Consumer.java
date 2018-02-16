@@ -23,7 +23,6 @@ public class Consumer implements Runnable {
     @Override
     public void run() {
         Random r = new Random();
-        List<Integer> i;
         while (done < runsNumber) {
             Future f = p.take(number);
             while (!f.isAvailable()) {

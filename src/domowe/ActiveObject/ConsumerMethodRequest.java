@@ -1,8 +1,5 @@
 package domowe.ActiveObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ConsumerMethodRequest implements MethodRequest {
 
     public int n;

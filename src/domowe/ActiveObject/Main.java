@@ -26,7 +26,7 @@ public class Main {
         int consumersN[];
 
         for (int buffSize = 100; buffSize <= maxBuffSize; buffSize += 100) {
-            for (int sleepTime =1; sleepTime <= maxSleepTime; sleepTime += 1) {
+            for (int sleepTime = 1; sleepTime <= maxSleepTime; sleepTime += 1) {
                 for (int threadNumb = 10; threadNumb <= maxThreads; threadNumb += 10) {
                     System.out.println("Threads " + threadNumb + " buffsize " + buffSize + "sleeptime " + sleepTime);
                     producers = new Thread[threadNumb];

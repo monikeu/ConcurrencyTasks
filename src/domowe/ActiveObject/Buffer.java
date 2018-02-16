@@ -23,12 +23,4 @@ public class Buffer {
 
     }
 
-    public void printState() {
-        List<Integer> res = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
-            res.add(buffer[i]);
-        }
-        System.out.println(res);
-    }
-
 }

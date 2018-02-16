@@ -19,5 +19,5 @@ class QueueConsume extends ActivationQueue{
 
     ConsumerMethodRequest peek(){return queue.peek();}
 
-    boolean isEmpty(){return queue.isEmpty();};
+    boolean isEmpty(){return queue.isEmpty();}
 }

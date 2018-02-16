@@ -23,7 +23,6 @@ public class Producer implements Runnable {
     public void run() {
         Random r = new Random();
 
-        List<Integer> i;
         while (done < runsNumber) {
             Future f = p.put(number);
             while (!f.isAvailable()) {
